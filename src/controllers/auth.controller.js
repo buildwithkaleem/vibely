@@ -14,7 +14,7 @@
 
 import User from "../models/User.js";
 // import generateToken from "../utils/generateToken.js";
-// import { getTikTokUser } from "../services/tiktok.service.js";
+import { getTikTokUser } from "../services/tiktok.service.js";
 import crypto from "crypto";
 import axios from "axios";
 
@@ -100,11 +100,11 @@ export const callback = async (req, res) => {
       }
     );
 
-    // const profile = await getTikTokUser(
-    //   response.data.access_token
-    // );
+    const profile = await getTikTokUser(
+      response.data.access_token
+    );
 
-    // console.log(profile);
+    console.log(profile);
 
     return res.json(response.data);
   } catch (err) {

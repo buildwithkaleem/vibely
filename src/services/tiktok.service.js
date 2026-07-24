@@ -1,3 +1,31 @@
+
+import axios from "axios";
+
+export const getTikTokUser = async (accessToken) => {
+  try {
+    const response = await axios.get(
+      "https://open.tiktokapis.com/v2/user/info/",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        params: {
+          fields:
+            "open_id,union_id,display_name,avatar_url,avatar_large_url",
+        },
+      }
+    );
+
+    return response.data.data.user;
+  } catch (error) {
+    console.error(
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+
 // import axios from "axios";
 
 // export const getTikTokUser = async (accessToken) => {
