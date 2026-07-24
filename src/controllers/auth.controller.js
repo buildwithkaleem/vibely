@@ -36,21 +36,51 @@ export const login = async (req, res) => {
   return res.redirect(authUrl);
 };
 
+import axios from "axios";
+
 export const callback = async (req, res) => {
+  try {
+    const { code } = req.query;
 
-  const { code, state, error } = req.query;
+    const response = await axios.post(
+      "https://open.tiktokapis.com/v2/oauth/token/",
+      new URLSearchParams({
+        client_key: process.env.TIKTOK_CLIENT_KEY,
+        client_secret: process.env.TIKTOK_CLIENT_SECRET,
+        code,
+        grant_type: "authorization_code",
+        redirect_uri: process.env.TIKTOK_REDIRECT_URI,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
 
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      error,
-    });
+    return res.json(response.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+
+    return res.status(500).json(err.response?.data || { error: err.message });
   }
-
-  return res.json({
-    success: true,
-    message: "Authorization code received.",
-    code,
-    state,
-  });
 };
+
+// export const callback = async (req, res) => {
+
+//   const { code, state, error } = req.query;
+
+//   if (error) {
+//     return res.status(400).json({
+//       success: false,
+//       error,
+//     });
+//   }
+
+//   return res.json({
+//     success: true,
+//     message: "Authorization code received.",
+//     code,
+//     state,
+//   });
+// };
