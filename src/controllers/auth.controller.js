@@ -12,8 +12,11 @@
 
 
 
-
+import User from "../models/User.js";
+import generateToken from "../utils/generateToken.js";
+import { getTikTokUser } from "../services/tiktok.service.js";
 import crypto from "crypto";
+import axios from "axios";
 
 export const login = async (req, res) => {
 
@@ -29,19 +32,17 @@ export const login = async (req, res) => {
 
   const authUrl = `https://www.tiktok.com/v2/auth/authorize/?${params.toString()}`;
 
-  // console.log(process.env.TIKTOK_REDIRECT_URI);
-  // console.log(process.env.TIKTOK_CLIENT_KEY);
-  // console.log(authUrl);
 
   return res.redirect(authUrl);
 };
 
-import axios from "axios";
+
 
 export const callback = async (req, res) => {
   try {
     const { code } = req.query;
 
+    // 1. Authorization Code → Access Token
     const response = await axios.post(
       "https://open.tiktokapis.com/v2/oauth/token/",
       new URLSearchParams({
@@ -58,13 +59,60 @@ export const callback = async (req, res) => {
       }
     );
 
-    return res.json(response.data);
+    // 2. Access Token se TikTok User Profile lao
+    const profile = await getTikTokUser(response.data.access_token);
+
+    console.log("========== PROFILE ==========");
+    console.log(profile);
+
+    // 3. Browser ko response bhejo
+    return res.json({
+      token: response.data,
+      profile,
+    });
+
   } catch (err) {
     console.error(err.response?.data || err.message);
 
-    return res.status(500).json(err.response?.data || { error: err.message });
+    return res.status(500).json(
+      err.response?.data || { error: err.message }
+    );
   }
 };
+
+// export const callback = async (req, res) => {
+//   try {
+//     const { code } = req.query;
+
+//     const response = await axios.post(
+//       "https://open.tiktokapis.com/v2/oauth/token/",
+//       new URLSearchParams({
+//         client_key: process.env.TIKTOK_CLIENT_KEY,
+//         client_secret: process.env.TIKTOK_CLIENT_SECRET,
+//         code,
+//         grant_type: "authorization_code",
+//         redirect_uri: process.env.TIKTOK_REDIRECT_URI,
+//       }),
+//       {
+//         headers: {
+//           "Content-Type": "application/x-www-form-urlencoded",
+//         },
+//       }
+//     );
+
+//     const profile = await getTikTokUser(
+//       response.data.access_token
+//     );
+
+//     console.log(profile);
+
+//     return res.json(response.data);
+//   } catch (err) {
+//     console.error(err.response?.data || err.message);
+
+//     return res.status(500).json(err.response?.data || { error: err.message });
+//   }
+// };
 
 // export const callback = async (req, res) => {
 
