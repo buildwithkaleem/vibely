@@ -13,8 +13,8 @@
 
 
 import User from "../models/User.js";
-import generateToken from "../utils/generateToken.js";
-import { getTikTokUser } from "../services/tiktok.service.js";
+// import generateToken from "../utils/generateToken.js";
+// import { getTikTokUser } from "../services/tiktok.service.js";
 import crypto from "crypto";
 import axios from "axios";
 
@@ -80,6 +80,8 @@ export const login = async (req, res) => {
 //   }
 // };
 
+import { getTikTokUser } from "../services/tiktok.service.js";
+
 export const callback = async (req, res) => {
   try {
     const { code } = req.query;
@@ -106,7 +108,11 @@ export const callback = async (req, res) => {
 
     console.log(profile);
 
-    return res.json(response.data);
+    // return res.json(response.data);
+    return res.json({
+      token: response.data,
+      profile,
+    });
   } catch (err) {
     console.error(err.response?.data || err.message);
 
