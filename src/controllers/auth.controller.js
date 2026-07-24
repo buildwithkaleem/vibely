@@ -114,10 +114,21 @@ export const callback = async (req, res) => {
     const token = generateToken(user._id);
 
     // 👇 YAHAN response bhejo
+    // return res.json({
+    //   success: true,
+    //   token,
+    //   user,
+    // });
+
     return res.json({
       success: true,
       token,
-      user,
+      user: {
+        _id: user._id,
+        displayName: user.displayName,
+        avatar: user.avatar,
+        openId: user.openId,
+      },
     });
   } catch (err) {
     console.error(err.response?.data || err.message);
