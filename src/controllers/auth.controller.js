@@ -38,49 +38,8 @@ export const login = async (req, res) => {
 
 
 
-// export const callback = async (req, res) => {
-//   try {
-//     const { code } = req.query;
-
-//     // 1. Authorization Code → Access Token
-//     const response = await axios.post(
-//       "https://open.tiktokapis.com/v2/oauth/token/",
-//       new URLSearchParams({
-//         client_key: process.env.TIKTOK_CLIENT_KEY,
-//         client_secret: process.env.TIKTOK_CLIENT_SECRET,
-//         code,
-//         grant_type: "authorization_code",
-//         redirect_uri: process.env.TIKTOK_REDIRECT_URI,
-//       }),
-//       {
-//         headers: {
-//           "Content-Type": "application/x-www-form-urlencoded",
-//         },
-//       }
-//     );
-
-//     // 2. Access Token se TikTok User Profile lao
-//     const profile = await getTikTokUser(response.data.access_token);
-
-//     console.log("========== PROFILE ==========");
-//     console.log(profile);
-
-//     // 3. Browser ko response bhejo
-//     return res.json({
-//       token: response.data,
-//       profile,
-//     });
-
-//   } catch (err) {
-//     console.error(err.response?.data || err.message);
-
-//     return res.status(500).json(
-//       err.response?.data || { error: err.message }
-//     );
-//   }
-// };
-
 import { getTikTokUser } from "../services/tiktok.service.js";
+import generateToken from "../utils/generateToken.js";
 
 export const callback = async (req, res) => {
   try {
@@ -108,10 +67,57 @@ export const callback = async (req, res) => {
 
     console.log(profile);
 
-    // return res.json(response.data);
+    let user = await User.findOne({
+      openId: profile.open_id,
+    });
+
+    if (!user) {
+      user = await User.create({
+        openId: profile.open_id,
+        unionId: profile.union_id,
+
+        displayName: profile.display_name,
+
+        avatar: profile.avatar_url,
+
+        accessToken: response.data.access_token,
+
+        refreshToken: response.data.refresh_token,
+
+        tokenExpiresIn: response.data.expires_in,
+
+        refreshExpiresIn:
+          response.data.refresh_expires_in,
+
+        scope: response.data.scope,
+      });
+    } else {
+      user.accessToken = response.data.access_token;
+
+      user.refreshToken = response.data.refresh_token;
+
+      user.tokenExpiresIn = response.data.expires_in;
+
+      user.refreshExpiresIn =
+        response.data.refresh_expires_in;
+
+      user.scope = response.data.scope;
+
+      user.displayName = profile.display_name;
+
+      user.avatar = profile.avatar_url;
+
+      await user.save();
+    }
+
+    // 👇 YAHAN JWT banao
+    const token = generateToken(user._id);
+
+    // 👇 YAHAN response bhejo
     return res.json({
-      token: response.data,
-      profile,
+      success: true,
+      token,
+      user,
     });
   } catch (err) {
     console.error(err.response?.data || err.message);
@@ -120,21 +126,41 @@ export const callback = async (req, res) => {
   }
 };
 
+
 // export const callback = async (req, res) => {
+//   try {
+//     const { code } = req.query;
 
-//   const { code, state, error } = req.query;
+//     const response = await axios.post(
+//       "https://open.tiktokapis.com/v2/oauth/token/",
+//       new URLSearchParams({
+//         client_key: process.env.TIKTOK_CLIENT_KEY,
+//         client_secret: process.env.TIKTOK_CLIENT_SECRET,
+//         code,
+//         grant_type: "authorization_code",
+//         redirect_uri: process.env.TIKTOK_REDIRECT_URI,
+//       }),
+//       {
+//         headers: {
+//           "Content-Type": "application/x-www-form-urlencoded",
+//         },
+//       }
+//     );
 
-//   if (error) {
-//     return res.status(400).json({
-//       success: false,
-//       error,
+//     const profile = await getTikTokUser(
+//       response.data.access_token
+//     );
+
+//     console.log(profile);
+
+//     // return res.json(response.data);
+//     return res.json({
+//       token: response.data,
+//       profile,
 //     });
-//   }
+//   } catch (err) {
+//     console.error(err.response?.data || err.message);
 
-//   return res.json({
-//     success: true,
-//     message: "Authorization code received.",
-//     code,
-//     state,
-//   });
+//     return res.status(500).json(err.response?.data || { error: err.message });
+//   }
 // };
