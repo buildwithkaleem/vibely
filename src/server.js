@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+// console.log(result);
+
+// console.log(process.env.TIKTOK_CLIENT_KEY);
+
 import app from "./app.js";
 
 const PORT = process.env.PORT || 5000;

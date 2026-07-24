@@ -20,18 +20,18 @@ export const login = async (req, res) => {
   const state = crypto.randomBytes(16).toString("hex");
 
   const params = new URLSearchParams({
-    client_key: process.env.CLIENT_KEY,
+    client_key: process.env.TIKTOK_CLIENT_KEY,
     scope: process.env.SCOPES,
     response_type: "code",
-    redirect_uri: process.env.REDIRECT_URI,
+    redirect_uri: process.env.TIKTOK_REDIRECT_URI,
     state,
   });
 
   const authUrl = `https://www.tiktok.com/v2/auth/authorize/?${params.toString()}`;
 
-  console.log(process.env.REDIRECT_URI);
-  console.log(process.env.CLIENT_KEY);
-  console.log(authUrl);
+  // console.log(process.env.TIKTOK_REDIRECT_URI);
+  // console.log(process.env.TIKTOK_CLIENT_KEY);
+  // console.log(authUrl);
 
   return res.redirect(authUrl);
 };
