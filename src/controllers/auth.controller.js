@@ -13,7 +13,7 @@
 
 
 import User from "../models/User.js";
-// import generateToken from "../utils/generateToken.js";
+import generateToken from "../utils/generateToken.js";
 import { getTikTokUser } from "../services/tiktok.service.js";
 import crypto from "crypto";
 import axios from "axios";
