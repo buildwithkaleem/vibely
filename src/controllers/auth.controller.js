@@ -27,11 +27,11 @@ export const login = async (req, res) => {
     state,
   });
 
+  const authUrl = `https://www.tiktok.com/v2/auth/authorize/?${params.toString()}`;
+
   console.log(process.env.REDIRECT_URI);
   console.log(process.env.CLIENT_KEY);
   console.log(authUrl);
-
-  const authUrl = `https://www.tiktok.com/v2/auth/authorize/?${params.toString()}`;
 
   return res.redirect(authUrl);
 };
