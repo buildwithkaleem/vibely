@@ -1,6 +1,6 @@
 import express from "express";
 import protect from "../middleware/protect.js";
-import upload from "../config/multer.js";
+// import upload from "../config/multer.js";
 import { uploadVideo } from "../controllers/video.controller.js";
 
 const router = express.Router();
@@ -20,10 +20,17 @@ const router = express.Router();
 // );
 
 
+// router.post(
+//   "/publish",
+//   protect,
+//   upload.single("video"),
+//   uploadVideo
+// );
+
+
 router.post(
   "/publish",
   protect,
-  upload.single("video"),
   uploadVideo
 );
 
