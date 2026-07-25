@@ -19,11 +19,16 @@ const protect = async (req, res, next) => {
         message: "Not authorized",
       });
     }
-    
+
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findById(decoded.id).select("-__v");
+    console.log("Decoded:", decoded);
+
+    const user = await User.findById(decoded.id)
+    // .select("-__v");
+
+    console.log("User:", user);
 
     if (!user) {
       return res.status(404).json({
