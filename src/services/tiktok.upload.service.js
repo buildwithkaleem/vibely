@@ -6,7 +6,7 @@ export const createTikTokDraft = async (
 ) => {
 
   const response = await axios.post(
-    "https://open.tiktokapis.com/v2/post/publish/inbox/video/init/",
+    "https://open-api.tiktok.com/v2/post/publish/inbox/video/init/",
     {
       source_info: {
         source: "PULL_FROM_URL",
