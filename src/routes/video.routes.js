@@ -21,7 +21,7 @@ const router = express.Router();
 
 
 router.post(
-  "/upload",
+  "/publish",
   protect,
   upload.single("video"),
   uploadVideo
