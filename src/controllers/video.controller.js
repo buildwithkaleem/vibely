@@ -19,9 +19,13 @@
 // };
 
 
+import { createTikTokDraft } from "../services/tiktok.upload.service.js";
+import User from "../models/User.js";
+
 export const uploadVideo = async (req, res) => {
   try {
-    const { videoUrl, caption } = req.body;
+
+    const { videoUrl } = req.body;
 
     if (!videoUrl) {
       return res.status(400).json({
@@ -30,16 +34,49 @@ export const uploadVideo = async (req, res) => {
       });
     }
 
-    return res.json({
-      success: true,
-      videoUrl,
-      caption,
-      message: "Ready to send to TikTok",
-    });
+    const user = await User.findById(req.user._id);
+
+    const result = await createTikTokDraft(
+      user.accessToken,
+      videoUrl
+    );
+
+    return res.json(result);
+
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+
+    console.log(error.response?.data);
+
+    return res.status(500).json(
+      error.response?.data || {
+        error: error.message,
+      }
+    );
+
   }
 };
+
+// export const uploadVideo = async (req, res) => {
+//   try {
+//     const { videoUrl, caption } = req.body;
+
+//     if (!videoUrl) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Video URL is required",
+//       });
+//     }
+
+//     return res.json({
+//       success: true,
+//       videoUrl,
+//       caption,
+//       message: "Ready to send to TikTok",
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
