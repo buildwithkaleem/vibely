@@ -16,6 +16,10 @@ export const getTikTokUser = async (accessToken) => {
       }
     );
 
+    // const profile = await getTikTokUser(user.accessToken);
+
+    // console.log(profile);
+
     return response.data.data.user;
   } catch (error) {
     console.error(
@@ -24,6 +28,8 @@ export const getTikTokUser = async (accessToken) => {
     throw error;
   }
 };
+
+
 
 
 // import axios from "axios";

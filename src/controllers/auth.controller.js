@@ -114,22 +114,23 @@ export const callback = async (req, res) => {
     const token = generateToken(user._id);
 
     // 👇 YAHAN response bhejo
-    // return res.json({
-    //   success: true,
-    //   token,
-    //   user,
-    // });
-
     return res.json({
       success: true,
       token,
-      user: {
-        _id: user._id,
-        displayName: user.displayName,
-        avatar: user.avatar,
-        openId: user.openId,
-      },
+      user,
     });
+
+
+    // return res.json({
+    //   success: true,
+    //   token,
+    //   user: {
+    //     _id: user._id,
+    //     displayName: user.displayName,
+    //     avatar: user.avatar,
+    //     openId: user.openId,
+    //   },
+    // });
   } catch (err) {
     console.error(err.response?.data || err.message);
 
@@ -137,6 +138,7 @@ export const callback = async (req, res) => {
   }
 };
 
+// console.log(response.data.access_token);
 
 // export const callback = async (req, res) => {
 //   try {
