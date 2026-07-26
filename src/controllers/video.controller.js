@@ -38,7 +38,12 @@ export const uploadVideo = async (req, res) => {
         `https://vibely-api.egrif.online/api/media/video/${video._id}`
       );
     } catch (err) {
-      console.log("TikTok Error:", err.response?.data || err.message);
+
+      return res.status(500).json({
+        success: false,
+        error: err.response?.data || err.message
+      });
+
     }
 
     return res.json({
