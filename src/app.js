@@ -3,6 +3,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import videoRoutes from "./routes/video.routes.js";
+import mediaRoutes from "./routes/media.routes.js";
 import path from "path";
 
 const app = express();
@@ -17,5 +18,6 @@ app.use(
   "/uploads",
   express.static(path.resolve("uploads"))
 );
+app.use("/api/media", mediaRoutes);
 
 export default app;
