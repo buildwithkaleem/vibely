@@ -35,7 +35,7 @@ export const uploadVideo = async (req, res) => {
     try {
       tiktokResult = await createTikTokDraft(
         user.accessToken,
-        `https://vibely.egrif.online/api/media/video/${video._id}`
+        `https://vibely-api.egrif.online/api/media/video/${video._id}`
       );
     } catch (err) {
       console.log("TikTok Error:", err.response?.data || err.message);
