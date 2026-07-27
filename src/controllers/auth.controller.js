@@ -113,12 +113,16 @@ export const callback = async (req, res) => {
     // 👇 YAHAN JWT banao
     const token = generateToken(user._id);
 
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/callback?token=${token}`
+    );
+
     // 👇 YAHAN response bhejo
-    return res.json({
-      success: true,
-      token,
-      user,
-    });
+    // return res.json({
+    //   success: true,
+    //   token,
+    //   user,
+    // });
 
 
     // return res.json({
