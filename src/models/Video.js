@@ -49,6 +49,25 @@ const videoSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    status: {
+      type: String,
+      enum: [
+        "uploading",
+        "draft",
+        "published",
+        "failed"
+      ],
+      default: "uploading"
+    },
+
+    publishId: String,
+
+    platform: {
+      type: String,
+      default: "tiktok"
+    },
+
+    errorMessage: String
   },
   {
     timestamps: true,
