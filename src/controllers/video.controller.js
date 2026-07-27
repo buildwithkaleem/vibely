@@ -63,9 +63,6 @@ export const uploadVideo = async (req, res) => {
   }
 };
 
-
-
-
 // Get all videos of logged-in user
 export const getVideos = async (req, res) => {
   try {
@@ -85,4 +82,115 @@ export const getVideos = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+// Get singal videos of logged-in user
+export const getVideo = async (req, res) => {
+  try {
+
+    const video = await Video.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      video,
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+};
+
+
+// update video caption
+export const updateVideo = async (req, res) => {
+
+  try {
+
+    const { caption } = req.body;
+
+    const video = await Video.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!video) {
+
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+
+    }
+
+    video.caption = caption;
+
+    await video.save();
+
+    return res.json({
+      success: true,
+      video,
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+
+};
+
+
+// delete singal video
+export const deleteVideo = async (req, res) => {
+
+  try {
+
+    const video = await Video.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!video) {
+
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+
+    }
+
+    await video.deleteOne();
+
+    return res.json({
+      success: true,
+      message: "Video deleted successfully",
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+
 };
