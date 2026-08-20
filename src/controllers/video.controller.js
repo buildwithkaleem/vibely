@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import Video from "../models/Video.js";
-import { createTikTokDraft } from "../services/tiktok.upload.service.js";
+import { publishTikTokVideo } from "../services/tiktok.upload.service.js";
 
 export const uploadVideo = async (req, res) => {
   try {
@@ -33,7 +33,7 @@ export const uploadVideo = async (req, res) => {
     let tiktokResult = null;
 
     try {
-      tiktokResult = await createTikTokDraft(
+      tiktokResult = await publishTikTokVideo(
         user.accessToken,
         `https://vibeli-api.egrif.online/api/media/video/${video._id}`
       );
