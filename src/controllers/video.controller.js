@@ -83,6 +83,7 @@ export const uploadVideo = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "TikTok video publish failed",
+      privacyLevel: creatorInfo,
       error:
         error.response?.data ||
         error.message,
