@@ -51,9 +51,7 @@ export const getTikTokCreatorInfo = async (accessToken) => {
         },
       }
     );
-
-    console.log(response)
-
+    
     return response.data;
 
   } catch (error) {
@@ -103,10 +101,7 @@ export const publishTikTokVideo = async ({
       }
     );
 
-    return response.status(200).json({
-      response,
-      privacyLevel, 
-    })
+    return response.data;
 
   } catch (error) {
     console.error(
