@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import Video from "../models/Video.js";
 import { publishTikTokVideo } from "../services/tiktok.upload.service.js";
 
+
 export const uploadVideo = async (req, res) => {
   try {
     const { videoUrl, caption } = req.body;
@@ -13,7 +14,6 @@ export const uploadVideo = async (req, res) => {
       });
     }
 
-    // Logged in user
     const user = await User.findById(req.user._id);
 
     if (!user) {
@@ -23,45 +23,137 @@ export const uploadVideo = async (req, res) => {
       });
     }
 
-    // Save video in database
     const video = await Video.create({
       user: user._id,
       cloudinaryUrl: videoUrl,
       caption: caption || "",
     });
 
-    let tiktokResult = null;
+    const tiktokVideoUrl =
+      `https://vibeli-api.egrif.online/api/media/video/${video._id}`;
 
-    try {
-      tiktokResult = await publishTikTokVideo(
-        user.accessToken,
-        `https://vibeli-api.egrif.online/api/media/video/${video._id}`
-      );
-    } catch (err) {
+    // 1️⃣ Get creator information
+    const creatorInfo = await getTikTokCreatorInfo(
+      user.accessToken
+    );
 
-      return res.status(500).json({
+    if (creatorInfo?.error?.code !== "ok") {
+      return res.status(400).json({
         success: false,
-        error: err.response?.data || err.message
+        message: "Unable to get TikTok creator information",
+        tiktok: creatorInfo,
       });
-
     }
 
-    return res.json({
+    const privacyOptions =
+      creatorInfo?.data?.privacy_level_options || [];
+
+    // 2️⃣ We specifically want public
+    if (!privacyOptions.includes("PUBLIC_TO_EVERYONE")) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "PUBLIC_TO_EVERYONE is not available for this TikTok account",
+        privacyOptions,
+      });
+    }
+
+    // 3️⃣ Direct publish
+    const tiktokResult = await publishTikTokVideo({
+      accessToken: user.accessToken,
+      videoUrl: tiktokVideoUrl,
+      caption: caption || "",
+      privacyLevel: "PUBLIC_TO_EVERYONE",
+    });
+
+    return res.status(200).json({
       success: true,
-      message: "Video saved successfully",
+      message: "Video submitted to TikTok successfully",
       video,
       tiktok: tiktokResult,
     });
 
   } catch (error) {
-    console.log(error);
+
+    console.error(
+      "UPLOAD VIDEO ERROR:",
+      error.response?.data || error.message
+    );
 
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "TikTok video publish failed",
+      error:
+        error.response?.data ||
+        error.message,
     });
   }
 };
+
+
+// export const uploadVideo = async (req, res) => {
+//   try {
+//     const { videoUrl, caption } = req.body;
+
+//     if (!videoUrl) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Video URL is required",
+//       });
+//     }
+
+//     // Logged in user
+//     const user = await User.findById(req.user._id);
+
+//     if (!user) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+
+//     // Save video in database
+//     const video = await Video.create({
+//       user: user._id,
+//       cloudinaryUrl: videoUrl,
+//       caption: caption || "",
+//     });
+
+//     let tiktokResult = null;
+
+//     try {
+//       tiktokResult = await publishTikTokVideo(
+//         user.accessToken,
+//         `https://vibeli-api.egrif.online/api/media/video/${video._id}`
+//       );
+//     } catch (err) {
+
+//       return res.status(500).json({
+//         success: false,
+//         error: err.response?.data || err.message
+//       });
+
+//     }
+
+//     return res.json({
+//       success: true,
+//       message: "Video saved successfully",
+//       video,
+//       tiktok: tiktokResult,
+//     });
+
+//   } catch (error) {
+//     console.log(error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+
+
 
 // Get all videos of logged-in user
 export const getVideos = async (req, res) => {
