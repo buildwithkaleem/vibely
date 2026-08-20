@@ -103,7 +103,10 @@ export const publishTikTokVideo = async ({
       }
     );
 
-    return response.data;
+    return response.status(200).json({
+      response,
+      privacyLevel, 
+    })
 
   } catch (error) {
     console.error(
