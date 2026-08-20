@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import Video from "../models/Video.js";
-import { publishTikTokVideo } from "../services/tiktok.upload.service.js";
+import { getTikTokCreatorInfo, publishTikTokVideo } from "../services/tiktok.upload.service.js";
 
 
 export const uploadVideo = async (req, res) => {

@@ -52,6 +52,8 @@ export const getTikTokCreatorInfo = async (accessToken) => {
       }
     );
 
+    console.log(response)
+
     return response.data;
 
   } catch (error) {
